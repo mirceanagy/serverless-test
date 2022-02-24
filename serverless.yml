@@ -1,0 +1,43 @@
+service:
+  name: serverless-test
+
+plugins:
+  - serverless-bundle
+  - serverless-offline  
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  timeout: 30
+  memorySize: 256
+  region: ${self:custom.config.AWS_REGION}
+  stage: ${opt:stage, 'stage'}
+  apiName: serverless-test-api-${self:provider.stage}
+  environment:
+    DB_HOST: ${self:custom.config.DB_HOST}
+    DB_PORT: ${self:custom.config.DB_PORT}
+    DB_NAME: ${self:custom.config.DB_NAME}
+    DB_USERNAME: ${self:custom.config.DB_USERNAME}
+    DB_PASSWORD: ${self:custom.config.DB_PASSWORD}
+  tags:
+    env: ${self:provider.stage}
+  # iamRoleStatements:
+
+package:
+  patterns:
+    - 'node_modules/**'
+    - 'package-lock.json'
+    - '!.gitignore'
+  individually: true
+
+custom:
+  serverless-offline:
+    httpPort: 3003  
+  config: ${file(serverless/${opt:stage, 'stage'}/config.yml)}
+  # iam: ${file(serverless/${opt:stage, 'stage'}/resources/iam.yml)}
+
+functions:
+  - ${file(serverless/common/functions.yml)}
+
+resources:
+  - ${file(serverless/${opt:stage, 'stage'}/resources.yml)}

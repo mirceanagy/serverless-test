@@ -1,0 +1,7 @@
+process.env.AWS_REGION = 'eu-west-1'
+process.env.DB_NAME = 'serverless-db'
+process.env.DB_USERNAME = 'master'
+process.env.DB_PASSWORD = 'password'
+process.env.DB_HOST = 'serverless-db-stage-aurorardscluster-1h631fha78lhr.cluster-c6xaggiujkbp.eu-west-1.rds.amazonaws.com'
+process.env.DB_PORT = '3306'
+process.env.VPC_ID = 'vpc-0a6ca43ae47896d20'

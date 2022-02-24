@@ -1,0 +1,12 @@
+registerUser:
+  handler: src/functions/registerUser.handler
+  events:
+    - http:
+        method: POST
+        path: /user
+getUsers:
+  handler: src/functions/getUsers.handler
+  events:
+    - http:
+        method: GET
+        path: /user

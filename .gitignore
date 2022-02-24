@@ -1,0 +1,5 @@
+.dynamodb/
+node_modules/
+.serverless/
+.vscode/
+.webpack/

@@ -1,0 +1,41 @@
+Resources:
+  AuroraMasterSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Join ['/', ['aurora-mysql', !Ref 'AWS::StackName']]
+      Description: !Join ['', ['Aurora MySQL Master User Secret ', 'for CloudFormation Stack ', !Ref 'AWS::StackName']]
+      GenerateSecretString:
+        SecretStringTemplate: !Join ['', ['{"username": "', 'master', '"}']]
+        GenerateStringKey: "password"
+        ExcludeCharacters: '"@/\'
+        PasswordLength: 16
+  ClusterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: DB Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+          FromPort: ${self:custom.config.DB_PORT}
+          ToPort: ${self:custom.config.DB_PORT}
+      VpcId: ${self:custom.config.VPC_ID}
+  AuroraRDSCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      MasterUsername: ${self:custom.config.DB_USERNAME}
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref AuroraMasterSecret, ':SecretString:password}}' ]]
+      Engine: aurora-mysql
+      EngineVersion: 5.7.mysql_aurora.2.10.2
+      DatabaseName: ${self:custom.config.DB_NAME}
+      BackupRetentionPeriod: 3
+      VpcSecurityGroupIds:
+      - !Ref 'ClusterSecurityGroup'
+  AuroraRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      CopyTagsToSnapshot: true
+      DBInstanceClass: db.t3.small
+      DBClusterIdentifier: !Ref AuroraRDSCluster
+      Engine: aurora-mysql
+      EngineVersion: 5.7.mysql_aurora.2.10.2
+      PubliclyAccessible: true

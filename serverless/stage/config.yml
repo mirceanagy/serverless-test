@@ -1,0 +1,8 @@
+AWS_REGION: eu-west-1
+DB_NAME: serverless-db
+DB_USERNAME: master
+DB_PASSWORD: !Join ['', ['{{resolve:secretsmanager:', !Ref AuroraMasterSecret, ':SecretString:password}}' ]]
+DB_HOST: 
+  Fn::GetAtt: [AuroraRDSCluster, Endpoint.Address]
+DB_PORT: 3306
+VPC_ID: vpc-0a6ca43ae47896d20
